@@ -35,8 +35,8 @@ const SPECIAL_RULES = {
   q14AlwaysAvailable: true,
 
   // La pregunta 17: no ofrecer ni aceptar otra forma de pago.
-  q17OnlyPayments:
-    "Únicamente aceptamos Infonavit o pago de contado.",
+q17OnlyPayments:
+  "Únicamente aceptamos Infonavit o pago de contado. No aceptamos ninguna otra forma de pago.",
 
   // La pregunta 19: explicar todo lo que cubre el avalúo.
   q19Appraisal:
@@ -94,10 +94,7 @@ const PROPERTY_TEXT =
   `✨ ${PROPERTY.features.join("\n✨ ")}\n\n` +
   `💳 Forma de pago: únicamente Infonavit o contado.`;
 
-const APPRAISAL_TEXT =
-  `El avalúo tiene un costo de ${PROPERTY.appraisal}. ` +
-  `Además, ese pago cubre la separación de la casa, la carta de no propiedad ` +
-  `y la actualización de documentos oficiales.`;
+const APPRAISAL_TEXT = SPECIAL_RULES.q19Appraisal;
 
 function normalize(text) {
   return String(text || "")
