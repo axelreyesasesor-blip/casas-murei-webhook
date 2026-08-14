@@ -195,34 +195,64 @@ app.get("/webhook", (req, res) => {
 // META WEBHOOK - MENSAJES ENTRANTES
 // ------------------------------------------------------------
 app.post("/webhook", async (req, res) => {
+  console.log("==========================================");
+  console.log("📩 POST recibido en /webhook");
+  console.log("Hora:", new Date().toISOString());
+  console.log("Body recibido:");
+  console.log(JSON.stringify(req.body, null, 2));
+  console.log("==========================================");
+
   try {
     const body = req.body;
 
     if (body.object !== "page") {
+      console.log("⚠️ El objeto recibido no es 'page':", body.object);
       return res.sendStatus(404);
     }
 
     for (const entry of body.entry || []) {
+      console.log("📦 Procesando entry:", entry.id || "sin id");
+
       for (const event of entry.messaging || []) {
-        if (!event.message || event.message.is_echo) continue;
+        console.log("💬 Evento de Messenger recibido");
+
+        if (!event.message) {
+          console.log("ℹ️ El evento no contiene message.");
+          continue;
+        }
+
+        if (event.message.is_echo) {
+          console.log("↩️ Mensaje echo ignorado.");
+          continue;
+        }
 
         const senderId = event.sender?.id;
         const text = event.message?.text;
 
-        if (!senderId || !text) continue;
+        console.log("👤 Sender ID:", senderId || "no disponible");
+        console.log("📝 Texto:", text || "sin texto");
+
+        if (!senderId || !text) {
+          console.log("⚠️ Falta senderId o texto. Evento ignorado.");
+          continue;
+        }
 
         const reply = getReply(text);
+
+        console.log("🤖 Respuesta preparada:", reply);
+
         await sendMessage(senderId, reply);
+
+        console.log("✅ Respuesta enviada correctamente.");
       }
     }
 
     return res.sendStatus(200);
   } catch (error) {
-    console.error("Error procesando webhook:", error);
+    console.error("❌ Error procesando webhook:", error);
     return res.sendStatus(500);
   }
 });
-
 async function sendMessage(recipientId, text) {
   if (!PAGE_ACCESS_TOKEN) {
     throw new Error("Falta PAGE_ACCESS_TOKEN en las variables de entorno.");
